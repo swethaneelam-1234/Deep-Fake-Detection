@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Analysis history | Deepfake Defender{% endblock %}
+{% block content %}
+<section class="result-header"><p class="eyebrow">SAVED RESULTS</p><h1>Analysis history</h1><p class="muted">Only result summaries are stored. Uploaded video files are deleted after processing.</p></section>
+<section class="history-panel">
+{% if analyses %}
+  <div class="table-wrap"><table><thead><tr><th>Video</th><th>Prediction</th><th>Fake score</th><th>Frames</th><th>Date</th></tr></thead><tbody>
+  {% for item in analyses %}<tr><td>{{ item.filename }}</td><td><span class="result-pill {{ 'fake' if item.prediction == 'Likely Fake' else 'real' }}">{{ item.prediction }}</span></td><td>{{ '%.1f'|format(item.fake_score * 100) }}%</td><td>{{ item.frames_checked }}</td><td>{{ item.created_at }}</td></tr>{% endfor %}
+  </tbody></table></div>
+{% else %}<p class="empty-state">No analyses yet. Upload a video from the home page to get started.</p>{% endif %}
+<a class="button button-primary" href="{{ url_for('home') }}">Back to home <span>→</span></a>
+</section>
+{% endblock %}

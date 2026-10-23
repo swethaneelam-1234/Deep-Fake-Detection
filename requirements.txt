@@ -1,0 +1,7 @@
+Flask>=3.0,<4.0
+Werkzeug>=3.0,<4.0
+opencv-python>=4.9
+numpy>=1.26
+Pillow>=10.0
+transformers>=4.44,<5.0
+torch>=2.2

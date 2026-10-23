@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Deepfake Defender | Home{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="hero-copy">
+    <p class="eyebrow">AI-ASSISTED VIDEO CHECK</p>
+    <h1>Look beyond what you see.</h1>
+    <p class="hero-text">Upload a short video and analyze sampled frames with a pretrained deepfake image classifier.</p>
+    <div class="hero-tags"><span>Frame analysis</span><span>AI prediction</span><span>Saved history</span></div>
+  </div>
+  <div class="hero-symbol" aria-hidden="true"><div class="scan-ring"><span>◉</span></div><i class="spark spark-one"></i><i class="spark spark-two"></i></div>
+</section>
+
+<section class="upload-card" id="upload">
+  <div class="section-heading">
+    <div><p class="eyebrow">START AN ANALYSIS</p><h2>Upload your video</h2></div>
+    <span class="step-badge">01 / 01</span>
+  </div>
+  <form action="{{ url_for('analyze') }}" method="post" enctype="multipart/form-data" id="upload-form">
+    <label class="drop-zone" for="video-file">
+      <span class="upload-icon">↑</span>
+      <strong id="file-label">Choose a video to analyze</strong>
+      <span class="muted">MP4, MOV, AVI, MKV or WEBM · Up to 50 MB · Up to 90 seconds</span>
+      <input id="video-file" type="file" name="video" accept=".mp4,.mov,.avi,.mkv,.webm,video/*" required>
+      <span class="choose-button">Browse files</span>
+    </label>
+    <p class="privacy-note">For this prototype, the uploaded video is deleted after analysis. Only the result summary is saved locally.</p>
+    <button class="button button-primary analyze-button" type="submit" id="analyze-button">Analyze video <span>→</span></button>
+  </form>
+</section>
+
+<section class="how-section">
+  <div class="section-heading"><div><p class="eyebrow">THE PROCESS</p><h2>Three simple steps</h2></div></div>
+  <div class="steps-grid">
+    <article class="step-card"><span class="step-number">01</span><h3>Upload</h3><p>Select a short video file from your device.</p></article>
+    <article class="step-card"><span class="step-number">02</span><h3>Analyze frames</h3><p>The app samples frames and checks each with a pretrained model.</p></article>
+    <article class="step-card"><span class="step-number">03</span><h3>Review result</h3><p>See the model's prediction and the aggregated fake score.</p></article>
+  </div>
+</section>
+
+<section class="history-preview">
+  <div class="section-heading"><div><p class="eyebrow">YOUR RECENT CHECKS</p><h2>Analysis history</h2></div><a class="text-link" href="{{ url_for('history') }}">View all →</a></div>
+  {% if recent_analyses %}
+    <div class="table-wrap"><table><thead><tr><th>Video</th><th>Prediction</th><th>Fake score</th><th>Date</th></tr></thead><tbody>
+      {% for item in recent_analyses %}<tr><td>{{ item.filename }}</td><td><span class="result-pill {{ 'fake' if item.prediction == 'Likely Fake' else 'real' }}">{{ item.prediction }}</span></td><td>{{ '%.1f'|format(item.fake_score * 100) }}%</td><td>{{ item.created_at }}</td></tr>{% endfor %}
+    </tbody></table></div>
+  {% else %}<p class="empty-state">Your completed analyses will appear here.</p>{% endif %}
+</section>
+<div class="disclaimer"><strong>Keep in mind:</strong> This is a research/learning prototype. Predictions can be wrong and should not be treated as proof that a video is genuine or manipulated.</div>
+<script>
+  const fileInput = document.getElementById('video-file');
+  const fileLabel = document.getElementById('file-label');
+  const form = document.getElementById('upload-form');
+  const analyzeButton = document.getElementById('analyze-button');
+  fileInput.addEventListener('change', () => {
+    fileLabel.textContent = fileInput.files.length ? fileInput.files[0].name : 'Choose a video to analyze';
+  });
+  form.addEventListener('submit', () => {
+    analyzeButton.disabled = true;
+    analyzeButton.innerHTML = 'Analyzing… please wait';
+  });
+</script>
+{% endblock %}

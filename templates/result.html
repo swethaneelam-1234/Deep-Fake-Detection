@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Analysis result | Deepfake Defender{% endblock %}
+{% block content %}
+<section class="result-header"><p class="eyebrow">ANALYSIS COMPLETE</p><h1>Your video analysis</h1><p class="muted">File: <strong>{{ filename }}</strong></p></section>
+<section class="result-card">
+  <div class="result-icon {{ 'fake' if result.prediction == 'Likely Fake' else 'real' }}">{{ '!' if result.prediction == 'Likely Fake' else '✓' }}</div>
+  <p class="eyebrow">MODEL PREDICTION</p>
+  <h2>{{ result.prediction }}</h2>
+  <p class="muted">This is a model estimate, not a definitive authenticity judgment.</p>
+  <div class="score-grid">
+    <div class="score-box"><span>Fake-class score</span><strong>{{ result.fake_percent }}%</strong><div class="score-track"><span style="width: {{ result.fake_percent }}%"></span></div></div>
+    <div class="score-box"><span>Frames checked</span><strong>{{ result.frames_checked }}</strong><small>Evenly sampled from the video</small></div>
+  </div>
+  <div class="frame-scores"><h3>Frame-level fake scores</h3><div class="frame-bars">
+    {% for score in result.frame_scores %}<div class="frame-bar-item"><div class="bar-track"><span style="height: {{ score }}%"></span></div><small>{{ score }}%</small></div>{% endfor %}
+  </div></div>
+  <div class="model-note"><strong>Model used:</strong> <code>{{ result.model_id }}</code><br><strong>How to read this:</strong> The app averages frame-level fake scores. A high score does not guarantee that the video is fake.</div>
+  <a class="button button-primary" href="{{ url_for('home') }}">Analyze another video <span>→</span></a>
+</section>
+<div class="disclaimer"><strong>Important limitation:</strong> This first version uses frame-level classification and score averaging. It does not yet include a dedicated temporal-attention network, audio analysis, or lip-sync verification.</div>
+{% endblock %}
